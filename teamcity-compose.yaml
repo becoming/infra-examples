@@ -1,0 +1,53 @@
+version: '3'
+
+volumes:
+  teamcity_data_becoming:
+    driver: local
+  teamcity_logs_becoming:
+    driver: local
+  teamcity_agent_conf_becoming:
+    driver: local
+  teamcity_agent_work_becoming:
+      driver: local
+  teamcity_agent_temp_becoming:
+      driver: local
+  teamcity_agent_tools_becoming:
+      driver: local
+  teamcity_agent_plugins_becoming:
+      driver: local
+  teamcity_agent_system_becoming:
+      driver: local
+
+networks:
+  becomingnet:
+    external: true
+
+services:
+  teamcity:
+    image: jetbrains/teamcity-server
+    container_name: teamcity-becoming
+    volumes:
+      - teamcity_logs_becoming:/opt/teamcity/logs
+      - teamcity_data_becoming:/data/teamcity_server/datadir
+    environment:
+      - "TEAMCITY_HTTPS_PROXY_ENABLED=true"
+      - "TEAMCITY_SERVER_MEM_OPTS=-Xmx2g -XX:MaxPermSize=270m -XX:ReservedCodeCacheSize=350m"
+    networks:
+      - becomingnet
+
+  teamcity-agent:
+    image: jetbrains/teamcity-agent
+    container_name: teamcity-agent-becoming
+    volumes:
+#      - teamcity_agent_conf_becoming:/data/teamcity_agent/conf
+      - teamcity_agent_work_becoming:/opt/buildagent/work
+      - teamcity_agent_temp_becoming:/opt/buildagent/temp
+      - teamcity_agent_tools_becoming:/opt/buildagent/tools
+      - teamcity_agent_plugins_becoming:/opt/buildagent/plugins
+      - teamcity_agent_system_becoming:/opt/buildagent/system
+      - /home/jocoda/jdk-11.0.10+9:/opt/jdk11
+    environment:
+      SERVER_URL: "http://teamcity:8111"
+      AGENT_NAME: "sd-97268"
+    networks:
+      - becomingnet
