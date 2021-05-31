@@ -1,0 +1,22 @@
+version: '3'
+
+volumes:
+  nexus_data_becoming:
+    driver: local
+
+networks:
+  becomingnet:
+    external: true
+
+services:
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus-becoming
+    volumes:
+      - nexus_data_becoming:/nexus-data
+    environment:
+      - "INSTALL4J_ADD_VM_PARAMS=-Xms2g -Xmx2g -XX:MaxDirectMemorySize=3g"
+    networks:
+      - becomingnet
+
+  
